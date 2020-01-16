@@ -8,6 +8,12 @@ module.exports = (express) => {
         const usersURL = API_BASE_URL+"/users";
         const token = req.cookies.userToken;
 
+        let isLogin = false;
+
+        if (token !== undefined) {
+            isLogin = true;
+        }
+
         getAllUsers(usersURL, token)
             .then((res) => {
                 return res.json();
@@ -15,6 +21,7 @@ module.exports = (express) => {
             .then((data) => {
                 if(!data.success) {
                     return res.render('index/', {
+                        isLogin: isLogin,
                         showHeader: true,
                         message: "This is the message from index page"
                     });
@@ -23,11 +30,10 @@ module.exports = (express) => {
                 return res.render('index/', {
                     showHeader: true,
                     message: "This is the message from index page",
+                    isLogin: isLogin,
                     users: data.data
                 });
             });
-
-        
     });
 
     router.get("/login", (req, res) => {

@@ -15,7 +15,12 @@
         <a class="nav-link" href="#">Pricing</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/logout" onclick="logout(event)">Logout</a>
+        {{#if isLogin}}
+          <a class="nav-link" href="/logout" onclick="logout(event)">Logout</a>
+        {{else}}
+          <a class="nav-link" href="/login">Login</a>
+        {{/if}}
+        
       </li>
     </ul>
   </div>
