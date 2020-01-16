@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Todo App</title>
+    {{> stylesheets }}
+  </head>
+  <body>
+    {{#if showHeader}}
+      {{> header }}
+    {{/if}}
+    <div id="app">
+      {{{body}}}
+    </div>
+    {{> footer }}
+  </body>
+</html>

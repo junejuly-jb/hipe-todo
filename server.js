@@ -1,8 +1,18 @@
 const express = require('express');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
+const path = require('path');
+const hbs = require('hbs');
 
 const app = express();
+
+// tell express about hbs.
+const partialsPath = path.join(__dirname, 'views/partials');
+hbs.registerPartials(partialsPath);
+
+// set up view engine
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'hbs');
 
 // middleware
 app.use(morgan('combined'));
@@ -10,6 +20,8 @@ app.use(morgan('combined'));
 app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
 app.use(bodyParser.json())
+// register our static assets.(CSS,IMAGES,JS)
+app.use(express.static(path.join(__dirname, 'public')));
 
 // import database
 const dbConfig = {
@@ -22,8 +34,15 @@ const dbConfig = {
 const db = require('./database/db')(dbConfig);
 db.connect(); 
 
-// register our API routes
+// register our API routes.
 const userHandler = require('./api/users.handler')(express, db);
+
+// register our regular route handler.
+const indexHandler = require('./routes/index.handler')(express);
+
+// regular routes
+app.use('/', indexHandler);
+
 
 // api routes
 app.use('/api/v1', userHandler);
@@ -35,5 +54,3 @@ app.listen(PORT, (err) => {
     }
     console.log(`Server is running on PORT: ${PORT}!`);
 });
-
-

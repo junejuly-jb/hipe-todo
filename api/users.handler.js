@@ -4,12 +4,13 @@ const jwt = require('jsonwebtoken');
 const SALT_ROUNDS = 8;
 const JWT_PASSPHRASE = "!@#$%^&*(~~~~1111111ZXCVBNMSDFSDFSDFDIIERE#$%^&*(@#@#@#@";
 
-// HTTP VERBS: GET, POST, PUT/PATCH, DELETE
+const auth = require('../middleware/auth');
 
+// HTTP VERBS: GET, POST, PUT/PATCH, DELETE
 module.exports = (express, db) => {
     const api = express.Router();
 
-    api.get('/users', async (req, res) => { // NOTE: You cannot call `await` if it is not surrounded by the async function.
+    api.get('/users', auth, async (req, res) => { // NOTE: You cannot call `await` if it is not surrounded by the async function.
         const usersQuery = 'SELECT * FROM users ORDER BY id DESC;';
         const result = await db.query(usersQuery);
 
