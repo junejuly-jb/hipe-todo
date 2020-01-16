@@ -3,6 +3,7 @@ const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const path = require('path');
 const hbs = require('hbs');
+const cookieParser = require('cookie-parser');
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.set('view engine', 'hbs');
 
 // middleware
 app.use(morgan('combined'));
+app.use(cookieParser());
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json

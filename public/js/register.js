@@ -37,6 +37,7 @@ function register(evt) {
             }
 
             alert(data.message);
+            location.href = '/login';
         });
 }
 

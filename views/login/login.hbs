@@ -1,11 +1,12 @@
 <div class="container text-center">
-    <form class="form-signin" onsubmit="login()">
+    <form class="form-signin" onsubmit="login(event)">
         <img class="mb-4" src="https://getbootstrap.com/docs/4.0/assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
         <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
         <label for="name" class="sr-only">Name</label>
-        <input type="text" id="name" class="form-control" placeholder="Name" />
+        <input type="text" id="name" name="name" class="form-control" placeholder="Name" />
+
         <label for="password" class="sr-only">Password</label>
-        <input type="password" id="password" class="form-control" placeholder="Password" />
+        <input type="password" id="password" name="password" class="form-control" placeholder="Password" />
         <div class="checkbox mb-3">
             <label>
                 <input type="checkbox" value="remember-me"> Remember me
@@ -16,3 +17,5 @@
         </button>
     </form>
 </div>
+
+<script src="/js/login.js"></script>

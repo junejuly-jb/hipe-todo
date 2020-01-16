@@ -1,11 +1,33 @@
+const fetch = require('node-fetch');
+const API_BASE_URL = "http://localhost:3000/api/v1";
+
 module.exports = (express) => {
     const router = express.Router();
 
     router.get("", (req, res) => {
-        return res.render('index/', {
-            showHeader: true,
-            message: "This is the message from index page"
-        });
+        const usersURL = API_BASE_URL+"/users";
+        const token = req.cookies.userToken;
+
+        getAllUsers(usersURL, token)
+            .then((res) => {
+                return res.json();
+            })
+            .then((data) => {
+                if(!data.success) {
+                    return res.render('index/', {
+                        showHeader: true,
+                        message: "This is the message from index page"
+                    });
+                }
+                
+                return res.render('index/', {
+                    showHeader: true,
+                    message: "This is the message from index page",
+                    users: data.data
+                });
+            });
+
+        
     });
 
     router.get("/login", (req, res) => {
@@ -15,11 +37,34 @@ module.exports = (express) => {
         })
     });
 
+    router.get("/logout", (req, res) => {
+        return res.clearCookie("userToken")
+            .redirect("/login");
+    });
+
     router.get("/register", (req, res) => {
         return res.render('register/register', {
             showHeader: false,
             title: "Please register"
         });
     });
+
+    // users
+    router.get("/users/:id", (req, res) => {
+        return res.render('profile/profile', {
+            id: req.params.id
+        });
+    });
     return router;
 };
+
+function getAllUsers(url, token) {
+    const options = {
+        method: 'GET',
+        headers: {
+            'Authorization': "Bearer "+token,
+            "Content-Type": "application/json"
+        }
+    }
+    return fetch(url, options);
+}

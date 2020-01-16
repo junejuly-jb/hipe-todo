@@ -80,13 +80,13 @@ module.exports = (express, db) => {
 			isAuthenticated: true
         };
         
-		const token = jwt.sign(payload, JWT_PASSPHRASE, { algorithm: 'HS256'});
-
-        return res.json({
-            success: true,
-            token: token,
-            message: "Login successfully"
-        });
+        const token = jwt.sign(payload, JWT_PASSPHRASE, { algorithm: 'HS256'});
+        return res.cookie('userToken', token)
+                .json({
+                    success: true,
+                    token: token,
+                    message: "Login successfully"
+                });
     });
     
     api.post('/users', async (req, res) => {
