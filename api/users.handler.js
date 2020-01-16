@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const SALT_ROUNDS = 8;
+const JWT_PASSPHRASE = "!@#$%^&*(~~~~1111111ZXCVBNMSDFSDFSDFDIIERE#$%^&*(@#@#@#@";
 
 // HTTP VERBS: GET, POST, PUT/PATCH, DELETE
 
@@ -33,11 +34,6 @@ module.exports = (express, db) => {
     });
 
     api.post('/users/login', async (req, res) => {
-        // 1. get name, password
-        // 2. check if exists(name)
-        // 3. compare passwords; if true, otherwise dont login.
-        // 4. login
-
         const { name, password } = req.body;
 
         if(!name && !password) {
@@ -62,6 +58,7 @@ module.exports = (express, db) => {
         const users = [];
         for (let i=0; i < rows.length; i++) {
             users.push({
+                id: rows[i].id,
                 name: rows[i].name,
                 password: rows[i].password
             });
@@ -76,8 +73,17 @@ module.exports = (express, db) => {
            });
         }
 
+        const payload = {
+			id: users[0].id,
+			name: users[0].name,
+			isAuthenticated: true
+        };
+        
+		const token = jwt.sign(payload, JWT_PASSPHRASE, { algorithm: 'HS256'});
+
         return res.json({
             success: true,
+            token: token,
             message: "Login successfully"
         });
     });
