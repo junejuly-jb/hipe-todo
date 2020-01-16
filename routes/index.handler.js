@@ -14,5 +14,12 @@ module.exports = (express) => {
             title: "This is the login form"
         })
     });
+
+    router.get("/register", (req, res) => {
+        return res.render('register/register', {
+            showHeader: false,
+            title: "Please register"
+        });
+    });
     return router;
 };
