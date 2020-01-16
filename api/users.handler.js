@@ -3,11 +3,13 @@ const jwt = require('jsonwebtoken');
 
 const SALT_ROUNDS = 8;
 
+// HTTP VERBS: GET, POST, PUT/PATCH, DELETE
+
 module.exports = (express, db) => {
     const api = express.Router();
 
     api.get('/users', async (req, res) => { // NOTE: You cannot call `await` if it is not surrounded by the async function.
-        let usersQuery = 'SELECT * FROM users ORDER BY id DESC;';
+        const usersQuery = 'SELECT * FROM users ORDER BY id DESC;';
         const result = await db.query(usersQuery);
 
         const users = []; // This is an array
@@ -30,6 +32,56 @@ module.exports = (express, db) => {
                 });
     });
 
+    api.post('/users/login', async (req, res) => {
+        // 1. get name, password
+        // 2. check if exists(name)
+        // 3. compare passwords; if true, otherwise dont login.
+        // 4. login
+
+        const { name, password } = req.body;
+
+        if(!name && !password) {
+            return res.status(200)
+                .json({
+                    success: true,
+                    message: "Fields cannot be empty!"
+                });
+        }
+
+        const userQuery = 'SELECT * FROM users WHERE name = ?';
+        const rows = await db.query(userQuery, [name]);
+
+        if(rows.length < 0) {
+            return res.status(404)
+                .json({
+                    success: false,
+                    message: "User not found"
+                });
+        }
+
+        const users = [];
+        for (let i=0; i < rows.length; i++) {
+            users.push({
+                name: rows[i].name,
+                password: rows[i].password
+            });
+        }
+        const hashedPassword = users[0].password;
+        const samePassword = await comparePasswords(password, hashedPassword);
+        
+        if (!samePassword) {
+           return res.json({
+               success: false,
+               message: "Username/Password is invalid"
+           });
+        }
+
+        return res.json({
+            success: true,
+            message: "Login successfully"
+        });
+    });
+    
     api.post('/users', async (req, res) => {
         const name = req.body.name;
         const age = req.body.age;
@@ -44,17 +96,17 @@ module.exports = (express, db) => {
                 });
         }
 
-        let query = "SELECT * FROM users WHERE name = ?;";
+        const query = "SELECT * FROM users WHERE name = ?;";
         const rows = await db.query(query, [name]);
         if (rows.length > 0) {
-            res.status(200)
+            return res.status(200)
                 .json({
                     success: false,
                     message: "User already exists."
                 });
         }
 
-        let insertQuery = "INSERT INTO `users`(name,age,password) VALUES (?,?,?);";
+        const insertQuery = "INSERT INTO `users`(name,age,password) VALUES (?,?,?);";
         // using a try catch version
         // try{
         //     const hashedPassword = await hashPassword(password);
@@ -79,6 +131,8 @@ module.exports = (express, db) => {
         }
     });
 
+    
+
     // delete a user by a given id
     api.delete('/users/:id', async (req, res) => {
         const id = req.params.id;
@@ -100,17 +154,16 @@ module.exports = (express, db) => {
     });
 
     // update a user by a given id
-    api.patch('/users/:id', async (req, res) => {
+    api.put('/users/:id', async (req, res) => {
         const id = req.params.id;
         const updateQuery = `UPDATE users
-        SET name = ?, age = ?, password = ?
+        SET name = ?, age = ?
         WHERE id = ?;`;
 
-        const { name, age, password } = req.body; // this is the short-hand notation of declaring variables if inside an object.
-        const hashedPassword = await hashPassword(password);
+        const { name, age } = req.body; // this is the short-hand notation of declaring variables if inside an object.
 
         try {
-            const affected = await db.query(updateQuery, [name,age,hashedPassword,id]);
+            const affected = await db.query(updateQuery, [name,age,id]);
         } catch(err) {
             await db.rollback();
             
