@@ -31,6 +31,31 @@ module.exports = (express, db) => {
                 });
     });
 
+    api.get('/todos/:user_id', auth, async (req, res) => {
+        const userId = req.params.user_id;
+
+        const todosByUserQuery = 'SELECT * FROM todos WHERE user_id = ?';
+
+        const rows = await db.query(todosByUserQuery, [userId])
+
+        const usersTodo = [];
+
+        for(let i = 0; i < rows.length; i++) {
+            usersTodo.push({
+                id: rows[i].id,
+                user_id: rows[i].user_id,
+                title: rows[i].title
+            });
+        }
+
+        return res.status(200)
+                .json({
+                    success: true,
+                    message: "Your todos",
+                    data: usersTodo
+                });
+    });
+
     api.post('/todos', auth, async (req, res) => {
         const title = req.body.title;
 

@@ -85,6 +85,7 @@ module.exports = (express, db) => {
                 .json({
                     success: true,
                     token: token,
+                    id: payload.id,
                     message: "Login successfully"
                 });
     });
