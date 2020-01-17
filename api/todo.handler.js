@@ -56,7 +56,7 @@ module.exports = (express, db) => {
                     message: "Authentication is required"
                 });
             }
-            const insertQuery = "INSERT INTO `todos`(user_id,title) VALUES (?,?);";
+            const insertQuery = "INSERT INTO `todos`.todos(user_id,title) VALUES (?,?);";
             try {
                 await db.query(insertQuery, [user.id,title]);
                 return res.status(200)

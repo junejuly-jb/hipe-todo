@@ -42,9 +42,11 @@ const todoHandler = require('./api/todo.handler')(express, db);
 
 // register our regular route handler.
 const indexHandler = require('./routes/index.handler')(express);
+const todos = require('./routes/todo.handler')(express);
 
 // regular routes
 app.use('/', indexHandler);
+app.use('/new', todos);
 
 
 // api routes
