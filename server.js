@@ -38,6 +38,7 @@ db.connect();
 
 // register our API routes.
 const userHandler = require('./api/users.handler')(express, db);
+const todoHandler = require('./api/todo.handler')(express, db);
 
 // register our regular route handler.
 const indexHandler = require('./routes/index.handler')(express);
@@ -47,7 +48,7 @@ app.use('/', indexHandler);
 
 
 // api routes
-app.use('/api/v1', userHandler);
+app.use('/api/v1', [userHandler, todoHandler]);
 
 const PORT = process.env.PORT || "8080";
 app.listen(PORT, (err) => {
