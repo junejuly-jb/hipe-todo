@@ -5,7 +5,7 @@ module.exports = (express) => {
     const router = express.Router();
 
     router.get("", (req, res) => {
-        const usersURL = API_BASE_URL+"/users";
+        const todosURL = API_BASE_URL+"/todos";
         const token = req.cookies.userToken;
 
         let isLogin = false;
@@ -14,7 +14,7 @@ module.exports = (express) => {
             isLogin = true;
         }
 
-        getAllUsers(usersURL, token)
+        getAllTodos(todosURL, token)
             .then((res) => {
                 return res.json();
             })
@@ -29,7 +29,7 @@ module.exports = (express) => {
                 
                 return res.render('index/', {
                     showHeader: true,
-                    message: "This is the message from index page",
+                    message: "All Todos",
                     isLogin: isLogin,
                     users: data.data
                 });
@@ -64,7 +64,7 @@ module.exports = (express) => {
     return router;
 };
 
-function getAllUsers(url, token) {
+function getAllTodos(url, token) {
     const options = {
         method: 'GET',
         headers: {
